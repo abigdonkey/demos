@@ -4,7 +4,7 @@
  * @returns {HTMLElement}
  */
 function id(id){
-    return document.getElementById(obj);
+    return document.getElementById(id);
 }
 
 /**
@@ -52,130 +52,162 @@ function addClass(obj, sClass){
     obj.className += ' ' + sClass;
 }
 
-function removeClass(obj, sClass){
+
+function removeClass(obj, sClass) {
     var aClass = obj.className.split(' ');
-    if(!obj.className)return;
-    for(var i = 0, len= aClass.length; i< len; i++){
-        if(aClass[i] === sClass){
-            aClass.splice(i,1);
+    if (!obj.className) return;
+    for (var i = 0; i < aClass.length; i++) {
+        if (aClass[i] === sClass) {
+            aClass.splice(i, 1);
             obj.className = aClass.join(' ');
             break;
         }
     }
 }
 
+function fnLoad(){
 
-/*
+    var iTIme = new Date().getTime(); // 获取当前毫秒数
 
-function fnLoad()
-{
-    var iTime=new Date().getTime();
-    var oW=id("welcome");
-    var arr=[""];
-    var bImgLoad=true;
-    var bTime=false;
-    var oTimer=0;
-    bind(oW,"webkitTransitionEnd",end);
-    bind(oW,"transitionend",end);
-    oTimer=setInterval(function(){
-        if(new Date().getTime()-iTime>=5000)
-        {
-            bTime=true;
+    var oW = id('welcome');
+    var arr = [""]; // 图片地址的一个数组
+    // 图片加载的时间 和 进场动画的执行时间  bTime bImgLoad
+    var oTimer = null;
+
+    // 用来判断所有图片是否加载完毕
+    var bImgLoad = true;
+    var bTime = false;
+
+    bind(oW, "webkitTransitionEnd", end);
+    bind(oW, "transitionend", end);
+
+    // setInterval() 动画
+    oTimer = setInterval(function(){
+        // 当前时间 - 开始时间
+        if(new Date().getTime() - iTIme >= 5000){
+            bTime = true;
         }
-        if(bImgLoad&&bTime)
-        {
-            clearInterval(oTimer);
-            oW.style.opacity=0;
+
+        if(bTime && bImgLoad){
+            clearInterval(oTimer); // 清除定时器
+            //alert('执行跳转了');
+
+            oW.style.opacity = 0; // 隐藏欢迎页面
         }
     },1000);
-    function end()
-    {
-        removeClass(oW,"pageShow");
-        fnTab();
+
+    function end(){
+        //alert('动画执行完毕');
+        //console.log(1212);
+        removeClass(oW, 'pageShow')
     }
-    */
-/*for(var i=0;i<arr.length;i++)
-     {
-     var oImg=new Image();
-     oImg.src=arr[i];
-     oImg.onload=function()
-     {
 
-     }
+    /*for(var i = 0; i < arr.length; i++){
+        var oImg = new Image();
+        oImg.src = arr[i];
+        oImg.onload = function(){
+            bImgLoad = true; // 图片加载完毕，设置true
+        };
+    }*/
+}
 
-     }*//*
+
+/*
+* 图片轮播图切换
+*
+* */
+function fnTab(){
+    var oTab = id('tabPic');
+    var oList = id('picList');
+
+    var aNav = oTab.getElementsByTagName('nav')[0].children;
+
+    var iNow = 0; // 当前选中的
+    var iX = 0;   // 移动的位移 宽度x个数
+    var iW = view().w; // 屏幕宽度
+
+    var oTimer = 0;
+
+    var iStartTouchX = 0;
+    var iStartX  = 0;
+
+    bind(oTab, "touchstart", fnStart);
+    bind(oTab, "touchmove", fnMove);
+    bind(oTab, "touchend", fnEnd);
+
+    bind(document, "touchmove", function(ev){
+        ev.preventDefault(); // 去掉默认事件
+    });
+    auto();
+    function auto(){
+        oTimer = setInterval(function(){
+            iNow ++;
+            // 过界处理
+            iNow = iNow % aNav.length;
+            tab();
+        },2000);
+    }
+
+    function fnStart(ev){
+        oList.style.transition = "none";
+        ev = ev.changedTouches[0];
+        iStartTouchX = ev.pageX;
+        iStartX = iX;
+
+        clearInterval(oTimer); // 清除定时器
+
+    }
+
+    function fnMove(ev){
+        // 获取当前最表
+        ev = ev.changedTouches[0];
+        var iDis = ev.pageX - iStartTouchX; // 获取差值
+        iX = iStartX + iDis;
+        oList.style.transform = oList.style.WebkitTransform = "translateX("+iX+"px)";
+    }
+    function fnEnd(){
+        iNow = iX/iW; // Math.abs() 取整
+        iNow = -Math.round(iNow);
+        if(iNow < 0){
+            iNow = 0;
+        }
+        if(iNow > aNav.length - 1){
+            iNow = aNav.length -1;
+        }
+        tab();
+        auto();
+
+    }
+    function tab(){
+        iX = -iNow*iW;
+        oList.style.transition = ".5s";
+
+        // 去掉了 - ，需要大写 WebkitTransform
+        oList.style.transform = oList.style.WebkitTransform = "translateX("+iX+"px)";
+
+        /*
+        * for循环，去掉所有的 active类
+        * */
+        for(var i = 0; i < aNav.length; i++){
+            removeClass(aNav[i], "active");
+        }
+        // 给当前的添加active类
+        addClass(aNav[iNow], 'active');
+    }
 
 }
 
+/*
+
 function fnTab()
 {
-    var oTab=id("tabPic");
-    var oList=id("picList");
-    var aNav=oTab.getElementsByTagName("nav")[0].children;
-    var iNow=0;
-    var iX=0;
-    var iW=view().w;
-    var oTimer=0;
-    var iStartTouchX=0;
-    var iStartX=0;
-    bind(oTab,"touchstart",fnStart);
-    bind(oTab,"touchmove",fnMove);
-    bind(oTab,"touchend",fnEnd);
-    auto();
     if(!window.BfnScore)
     {
         fnScore();
         window.BfnScore=true;
     }
-    function auto()
-    {
-        oTimer=setInterval(function(){
-            iNow++;
-            iNow=iNow%aNav.length;
-            tab();
-        },2000);
-    }
-    function fnStart(ev)
-    {
-        oList.style.transition="none";
-        ev=ev.changedTouches[0];
-        iStartTouchX=ev.pageX;
-        iStartX=iX;
-        clearInterval(oTimer);
-    }
-    function fnMove(ev)
-    {
-        ev=ev.changedTouches[0];
-        var iDis=ev.pageX-iStartTouchX;
-        iX=iStartX+iDis;
-        oList.style.WebkitTransform=oList.style.transform="translateX("+iX+"px)";
-    }
-    function fnEnd()
-    {
-        iNow=iX/iW;
-        iNow=-Math.round(iNow);
-        if(iNow<0)
-        {
-            iNow=0;
-        }
-        if(iNow>aNav.length-1)
-        {
-            iNow=aNav.length-1;
-        }
-        tab();
-        auto();
-    }
-    function tab()
-    {
-        iX=-iNow*iW;
-        oList.style.transition="0.5s";
-        oList.style.WebkitTransform=oList.style.transform="translateX("+iX+"px)";
-        for(var i=0;i<aNav.length;i++)
-        {
-            removeClass(aNav[i],"active");
-        }
-        addClass(aNav[iNow],"active");
-    }
+
+
 }
 function fnScore()
 {

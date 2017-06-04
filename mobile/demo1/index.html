@@ -12,7 +12,7 @@
   document.body.style.height = view().h + 'px';
 </script>
 <!-- 欢迎页面 -->
-<section class="page pageSHow" id="welcome">
+<!--<section class="page pageShow" id="welcome">
   <div class="tree">
     <img src="./img/tree.jpg" alt=""/>
     <div class="welcome2">
@@ -27,11 +27,38 @@
   <h1 id="logo">
     <img src="./img/logo.png" alt=""/>
   </h1>
-</section>
+</section>-->
 <section class="page">上传成功</section>
 <section class="page">新闻页面</section>
 <section class="page">跳转页面</section>
 <section class="page">表单页面</section>
-<section class="page pageSHow">首页</section>
+<section class="page pageShow">
+  <section id="tabPic">
+    <ul id="picList">
+      <li><img src="img/1.jpg" alt=""/></li>
+      <li><img src="img/2.jpg" alt=""/></li>
+      <li><img src="img/3.jpg" alt=""/></li>
+      <li><img src="img/4.jpg" alt=""/></li>
+      <li><img src="img/5.jpg" alt=""/></li>
+    </ul>
+    <section class="picMask">
+      <p>成都九寨沟景区</p>
+      <nav>
+        <a href="javascript:;" class="active"></a>
+        <a href="javascript:;" class=""></a>
+        <a href="javascript:;" class=""></a>
+        <a href="javascript:;" class=""></a>
+        <a href="javascript:;" class=""></a>
+      </nav>
+    </section>
+  </section>
+</section>
+<script>
+  // 轮播图
+  fnTab();
+</script>
 </body>
+<script>
+  fnLoad();
+</script>
 </html>
